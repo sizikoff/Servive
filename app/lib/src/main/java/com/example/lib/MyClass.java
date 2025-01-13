@@ -1,38 +1,36 @@
 package com.example.lib;
 
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class MyClass {
 
     public static void main(String[] args) {
-        List<Task> tasks = new ArrayList<>();
-        tasks.add(new Task("A",3));
-        tasks.add(new Task("B",1));
-        tasks.add(new Task("C",5));
-        tasks.add(new Task("D",2));
-        tasks.add(new Task("E",4));
 
-        int minPriority = 2;
+      String inputFile = "example.txt";
+      String outputFile = "result.txt";
 
-        Iterator<Task> iterator = tasks.iterator();
-        while (iterator.hasNext()){
-            Task task = iterator.next();
-            if (task.priority <minPriority) {
-                iterator.remove();
+        try(BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
+
+            String line;
+            while ((line = reader.readLine())!=null){
+                System.out.println("Start"+line);
+                line = line.replace("0","10")
+                        .replace("1","11")
+                        .replace("2","12")
+                        .replace("3","13")
+                        .replace("7","17");
+                writer.write(line);
+                writer.newLine();
             }
+
+        } catch (IOException e) {
+            System.out.println("Error");
+            e.printStackTrace();
         }
-        Collections.sort(tasks, new Comparator<Task>() {
-            @Override
-            public int compare(Task t1, Task t2) {
-                return Integer.compare(t1.priority,t2.priority);
-            }
-        });
-
-        System.out.println(tasks);
     }
 }
