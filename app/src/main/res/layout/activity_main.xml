@@ -1,48 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+   <ImageView
+       android:id="@+id/recipeimage"
+       android:layout_width="match_parent"
+       android:layout_height="200dp"
+       android:scaleType="centerCrop"/>
+
+    <TextView
+        android:id="@+id/recipeName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:paddingTop="8dp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/recipeIngredients"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ингредиенты"
+        android:paddingTop="8dp"/>
+
+    <TextView
+        android:id="@+id/recipeInstructions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Инструкции"
+        android:paddingTop="8dp"/>
 
     <Button
-        android:id="@+id/playButton"
-        android:layout_width="0dp"
+        android:id="@+id/refreshButton"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Play"
-        app:layout_constraintBottom_toTopOf="@+id/videoPlayer"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/pauseButton">
-    </Button>
+        android:text="Найди другой рецепт"
+        android:layout_marginTop="16dp"/>
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/pauseButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Pause"
-        app:layout_constraintBottom_toTopOf="@+id/videoPlayer"
-        app:layout_constraintLeft_toRightOf="@+id/playButton"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/stopButton">
-    </Button>
-
-    <Button
-        android:id="@+id/stopButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Stop"
-        app:layout_constraintBottom_toTopOf="@+id/videoPlayer"
-        app:layout_constraintLeft_toRightOf="@+id/pauseButton"
-        app:layout_constraintRight_toRightOf="parent">
-    </Button>
-
-    <VideoView
-        android:id="@+id/videoPlayer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playButton" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
