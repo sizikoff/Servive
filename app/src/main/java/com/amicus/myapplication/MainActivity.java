@@ -3,6 +3,7 @@ package com.amicus.myapplication;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,11 +23,12 @@ public class MainActivity extends AppCompatActivity {
     TextView recipeName;
     TextView recipeInstructions;
     TextView recipeIngredients;
-
     ImageView recipeImage;
-
     Button refreshButton;
+    Button searchButton;
 
+
+    EditText ingredientInput;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,11 +38,20 @@ public class MainActivity extends AppCompatActivity {
         recipeIngredients = findViewById(R.id.recipeIngredients);
         recipeImage = findViewById(R.id.recipeimage);
         refreshButton = findViewById(R.id.refreshButton);
+        searchButton = findViewById(R.id.searchButton);
+        ingredientInput = findViewById(R.id.ingredientInput);
 
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 fetchRandomRecipe();
+            }
+        });
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchRecipeByIngredients();
             }
         });
         fetchRandomRecipe();
@@ -76,5 +87,46 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void searchRecipeByIngredients(){
+        String ingredient = ingredientInput.getText().toString().trim();
+        if (ingredient.isEmpty()) {
+            Toast.makeText(this, "Введите ингредиент", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://www.themealdb.com/api/json/v1/1/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RecipeApi recipeApi = retrofit.create(RecipeApi.class);
+        recipeApi.getReipesByIngredient(ingredient).enqueue(new Callback<RecipeResponce>() {
+            @Override
+            public void onResponse(Call<RecipeResponce> call, Response<RecipeResponce> response) {
+                if (response.isSuccessful()&& response.body() != null&& !response.body().getMeals().isEmpty()) {
+                    displayRecipe(response.body().getMeals().get(0));
+                }else {
+                    Toast.makeText(MainActivity.this, "Рецептов с таким ингредиентом нет", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RecipeResponce> call, Throwable t) {
+                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+
+    private void displayRecipe(Meal meal){
+        recipeName.setText(meal.getName());
+        recipeIngredients.setText("Ингредиенты " +meal.getIngredient1() +","+meal.getIngredient2()+
+                ","+meal.getIngredient3());
+        recipeInstructions.setText("Инструкция "+ meal.getInstructions());
+
+        Glide.with(MainActivity.this).load(meal.getImageUrl()).into(recipeImage);
+
     }
 }
