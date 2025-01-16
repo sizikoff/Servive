@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class Meal {
 
+    @SerializedName("idMeal")
+    @Expose
+    private String id;
     @SerializedName("strMeal")
     @Expose
     private String name;
@@ -23,6 +26,10 @@ public class Meal {
     @SerializedName("strIngredient3")
     @Expose
     private String ingredient3;
+
+    public String getId() {
+        return id;
+    }
 
     public String getName() {
         return name;

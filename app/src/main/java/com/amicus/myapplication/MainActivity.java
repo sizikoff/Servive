@@ -1,6 +1,10 @@
 package com.amicus.myapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,6 +30,11 @@ public class MainActivity extends AppCompatActivity {
     ImageView recipeImage;
     Button refreshButton;
     Button searchButton;
+    Button addToFavoriteButton;
+    Button openFavoriteButton;
+
+    RecipeDatabase recipeDatabase;
+    Meal currentMeal;
 
 
     EditText ingredientInput;
@@ -40,11 +49,36 @@ public class MainActivity extends AppCompatActivity {
         refreshButton = findViewById(R.id.refreshButton);
         searchButton = findViewById(R.id.searchButton);
         ingredientInput = findViewById(R.id.ingredientInput);
+        addToFavoriteButton = findViewById(R.id.addToFavoriteButton);
+        openFavoriteButton = findViewById(R.id.openFavoriteButton);
+
+        recipeDatabase = RecipeDatabase.getInstance(this);
 
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 fetchRandomRecipe();
+            }
+        });
+
+        openFavoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        addToFavoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentMeal != null) {
+                    favorite();
+                    Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(MainActivity.this, "Рецепт не загружен", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -57,6 +91,27 @@ public class MainActivity extends AppCompatActivity {
         fetchRandomRecipe();
     }
 
+    private void favorite() {
+        if (currentMeal != null) {
+            Log.d("FavoriteDebug", "currentMeal ID: " + currentMeal.getId());
+            Log.d("FavoriteDebug", "currentMeal Name: " + currentMeal.getName());
+            Log.d("FavoriteDebug", "currentMeal ImageUrl: " + currentMeal.getImageUrl());
+            FavoriteRecipe favoriteRecipe = new FavoriteRecipe(currentMeal.getId(), currentMeal.getName(), currentMeal.getImageUrl());
+            new Thread(() -> {
+                boolean exists = recipeDatabase.recipeDAO().isFavorite(favoriteRecipe.getId());
+                if (!exists) {
+                    recipeDatabase.recipeDAO().insert(favoriteRecipe);
+                    runOnUiThread(() -> Toast.makeText(this, "Добавлено в избранное", Toast.LENGTH_SHORT).show());
+                } else {
+                    runOnUiThread(() -> Toast.makeText(this, "Уже в избранном", Toast.LENGTH_SHORT).show());
+                }
+            }).start();
+        } else {
+            Toast.makeText(this, "Рецепт не загружен", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
     private void fetchRandomRecipe() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://www.themealdb.com/api/json/v1/1/")
@@ -67,17 +122,20 @@ public class MainActivity extends AppCompatActivity {
         recipeApi.getRandomRecipe().enqueue(new Callback<RecipeResponce>() {
             @Override
             public void onResponse(Call<RecipeResponce> call, Response<RecipeResponce> response) {
-                if (response.isSuccessful()&& response.body() != null){
+                if (response.isSuccessful() && response.body() != null) {
                     Meal meal = response.body().getMeals().get(0);
+
+                    // Инициализируем currentMeal
+                    currentMeal = meal;
+
+                    // Обновляем UI
                     recipeName.setText(meal.getName());
                     recipeInstructions.setText(meal.getInstructions());
-
-                    String ingredients = meal.getIngredient1() +"\n"+meal.getIngredient2()
-                            + "\n"+ meal.getIngredient3();
+                    String ingredients = meal.getIngredient1() + "\n" + meal.getIngredient2()
+                            + "\n" + meal.getIngredient3();
                     recipeIngredients.setText(ingredients);
-
                     Glide.with(MainActivity.this).load(meal.getImageUrl()).into(recipeImage);
-                }else{
+                } else {
                     Toast.makeText(MainActivity.this, "Ошибка загрузки рецептов", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -88,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void searchRecipeByIngredients(){
         String ingredient = ingredientInput.getText().toString().trim();
