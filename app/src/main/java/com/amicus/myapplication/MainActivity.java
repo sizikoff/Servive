@@ -13,8 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.anjlab.android.iab.v3.BillingProcessor;
+import com.anjlab.android.iab.v3.PurchaseInfo;
 import com.bumptech.glide.Glide;
 
 import retrofit2.Call;
@@ -23,7 +27,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BillingProcessor.IBillingHandler {
 
     TextView recipeName;
     TextView recipeInstructions;
@@ -35,9 +39,12 @@ public class MainActivity extends AppCompatActivity {
     Button openFavoriteButton;
     Button shareButton;
     Button watchVideoButton;
+    Button buyButton;
 
     RecipeDatabase recipeDatabase;
     Meal currentMeal;
+
+    BillingProcessor bp;
 
 
     EditText ingredientInput;
@@ -56,8 +63,21 @@ public class MainActivity extends AppCompatActivity {
         openFavoriteButton = findViewById(R.id.openFavoriteButton);
         shareButton = findViewById(R.id.shareButton);
         watchVideoButton = findViewById(R.id.videoButton);
+        buyButton = findViewById(R.id.buyButton);
+
+        bp = new BillingProcessor(this,getString(R.string.LICENSE_KEY),this);
+        bp.initialize();
 
         recipeDatabase = RecipeDatabase.getInstance(this);
+
+        buyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bp.isInitialized()){
+                    bp.purchase(MainActivity.this,"d1");
+                }
+            }
+        });
 
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,5 +248,35 @@ public class MainActivity extends AppCompatActivity {
             watchVideoButton.setVisibility(View.VISIBLE);
         }
 
+    }
+
+    @Override
+    public void onProductPurchased(@NonNull String productId, @Nullable PurchaseInfo details) {
+        if ("d1".equals(productId)){
+            Toast.makeText(this, "Успешная покупка", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onPurchaseHistoryRestored() {
+
+    }
+
+    @Override
+    public void onBillingError(int errorCode, @Nullable Throwable error) {
+        Toast.makeText(this, "Ошибка покупки "+errorCode, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBillingInitialized() {
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (bp != null) {
+            bp.release();
+        }
+        super.onDestroy();
     }
 }

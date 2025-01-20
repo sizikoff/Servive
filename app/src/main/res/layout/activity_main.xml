@@ -84,6 +84,17 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
+        android:id="@+id/buyButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Убрать рекламу"
+        app:layout_constraintBottom_toTopOf="@id/shareButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/shareButton"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <Button
         android:id="@+id/shareButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

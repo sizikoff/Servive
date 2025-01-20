@@ -47,4 +47,5 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     annotationProcessor("androidx.room:room-compiler:2.5.0")
     implementation("androidx.room:room-ktx:2.5.0")
+    implementation ("com.anjlab.android.iab.v3:library:2.0.3")
 }

@@ -2,4 +2,5 @@
     <string name="app_name">Рецепты</string>
     <string name="recipe_not_found">Рецепт не загружен</string>
     <string name="enter_ingredient">Введите ингредиент</string>
+    <string name="LICENSE_KEY" translatable="false">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyoH5dttu7CSF5j01wYefeNw5DDCYtHavQz6x5lvQuQtZpMqMyxlyDoDSBMsrjaWL8PMbVvoPtRF2GNxC2HKjb00WlS2xjYFadlTet+idhQCSeyBTMHIGjuXuXo1WlWk8L5aKGLkKkUr2ADstQCbhsKatQZ0Z39cr2kyHZZINHSmpAskSpCra2zqJc+rpyaXaTj13qSPugh0IHtPV43SZl1gJRO4+K+J8MsjGKGN5UbbZYtqVPCY3e82xaEmNqNvS4ptitAAidIi3iQFIpTytZxjACiYyt1fqpIL9ZWZ9bbVo6Lyir5uPurd4chrv9lCIkGXZZAiZWDnAWz3QIDAQAB</string>
 </resources>
