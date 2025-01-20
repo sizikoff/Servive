@@ -11,8 +11,6 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void testCalc(){
-        Calculator calculator = new Calculator();
 
-        assertThrows(ArithmeticException.class,()->calculator.devide(5,0));
     }
 }

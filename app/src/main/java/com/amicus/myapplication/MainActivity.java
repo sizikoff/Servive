@@ -1,6 +1,7 @@
 package com.amicus.myapplication;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     Button searchButton;
     Button addToFavoriteButton;
     Button openFavoriteButton;
+    Button shareButton;
+    Button watchVideoButton;
 
     RecipeDatabase recipeDatabase;
     Meal currentMeal;
@@ -51,8 +54,39 @@ public class MainActivity extends AppCompatActivity {
         ingredientInput = findViewById(R.id.ingredientInput);
         addToFavoriteButton = findViewById(R.id.addToFavoriteButton);
         openFavoriteButton = findViewById(R.id.openFavoriteButton);
+        shareButton = findViewById(R.id.shareButton);
+        watchVideoButton = findViewById(R.id.videoButton);
 
         recipeDatabase = RecipeDatabase.getInstance(this);
+
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentMeal != null) {
+                    String shareText = "Попробуйте рецепт "+ currentMeal.getName()+"\nИнгредиенты:\n"+recipeIngredients.getText().toString()
+                            +"\nИнструкция:"+currentMeal.getInstructions()+"\nВидео-рецепт:"+currentMeal.getVideoUrl();
+                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                    shareIntent.setType("text/plain");
+                    shareIntent.putExtra(Intent.EXTRA_SUBJECT,"Рецепт");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT,shareText);
+                    startActivity(Intent.createChooser(shareIntent,"Поделиться рецептом через"));
+                }else {
+                    Toast.makeText(MainActivity.this, R.string.recipe_not_found, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        watchVideoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentMeal != null&& currentMeal.getVideoUrl() !=null && !currentMeal.getVideoUrl().isEmpty()) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentMeal.getVideoUrl()));
+                    startActivity(intent);
+                }else {
+                    Toast.makeText(MainActivity.this, "Видео недоступно для этого рецепта", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<RecipeResponce> call, Throwable t) {
                 Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.d("TAG",t.getMessage());
             }
         });
     }
@@ -151,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
     private void searchRecipeByIngredients(){
         String ingredient = ingredientInput.getText().toString().trim();
         if (ingredient.isEmpty()) {
-            Toast.makeText(this, "Введите ингредиент", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.enter_ingredient, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -174,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<RecipeResponce> call, Throwable t) {
                 Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-
+                Log.d("TAG",t.getMessage());
             }
         });
     }
@@ -186,6 +221,12 @@ public class MainActivity extends AppCompatActivity {
         recipeInstructions.setText("Инструкция "+ meal.getInstructions());
 
         Glide.with(MainActivity.this).load(meal.getImageUrl()).into(recipeImage);
+
+        if (meal.getVideoUrl() == null||meal.getVideoUrl().isEmpty()) {
+            watchVideoButton.setVisibility(View.GONE);
+        }else {
+            watchVideoButton.setVisibility(View.VISIBLE);
+        }
 
     }
 }

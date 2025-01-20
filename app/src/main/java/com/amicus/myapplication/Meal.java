@@ -11,6 +11,10 @@ public class Meal {
     @SerializedName("strMeal")
     @Expose
     private String name;
+
+    @SerializedName("strYoutube")
+    @Expose
+    private String videoUrl;
     @SerializedName("strInstructions")
     @Expose
     private String instructions;
@@ -33,6 +37,9 @@ public class Meal {
 
     public String getName() {
         return name;
+    }
+    public String getVideoUrl() {
+        return videoUrl;
     }
 
     public String getInstructions() {
